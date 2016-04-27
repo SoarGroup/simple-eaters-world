@@ -1,0 +1,13 @@
+VERSION 4
+/random/random.dm
+0	ROOT random random 1
+1	0	FOPERATOR _firstload _firstload.soar 3
+2	0	FOLDER all all 4
+3	2	OPERATOR cleanup cleanup.soar 8
+4	0	FOLDER elaborations elaborations 2
+5	4	FOPERATOR _all _all.soar 5
+6	4	FOPERATOR top-state top-state.soar 6
+7	0	OPERATOR forward forward.soar 10
+8	0	OPERATOR initialize-random initialize-random.soar 7
+9	0	OPERATOR rotate rotate.soar 9
+END
