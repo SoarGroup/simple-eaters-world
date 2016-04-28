@@ -259,6 +259,8 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 							d.filledSquare(col+1, row+1, boxSize);
 						} else {
 							d.filledCircle(col+1, row+1, circleSize);
+							d.setPenColor(Color.WHITE);
+							d.text(col+1, row+1, String.valueOf(getPoints(o)));
 						}
 					}
 				}
