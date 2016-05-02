@@ -1,3 +1,4 @@
 lib/soar/java/swt.jar
 .DS_Store
+hs_err_pid*.log
 
