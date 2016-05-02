@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import edu.princeton.cs.introcs.Draw;
+import edu.princeton.cs.introcs.DrawListener;
 import sml.Agent;
 import sml.Agent.OutputEventInterface;
 import sml.Agent.RunEventInterface;
@@ -17,7 +17,7 @@ import sml.StringElement;
 import sml.WMElement;
 import sml.smlRunEventId;
 
-public abstract class SimpleEatersWorld implements RunEventInterface, OutputEventInterface {
+public abstract class SimpleEatersWorld implements RunEventInterface, OutputEventInterface, DrawListener {
 	final protected String CMD_ROTATE = "rotate";
 	final protected String CMD_FORWARD = "forward";
 	
@@ -27,7 +27,6 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	final protected Color COLOR_EATER_OUTER = Color.BLACK;
 	final protected Color COLOR_EATER_INNER = Color.decode("#FFC65D");
 
-	final protected CountDownLatch done;
 	final protected MapObject[][] m;
 	final protected MapObject[][] backupM;
 	final protected int foodCount;
@@ -56,16 +55,15 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	protected Identifier inputLink = null;
 	protected List<WMElement> wmes = new LinkedList<>();
 	
-	protected final int sleepTime;
 	protected final Draw d = new Draw("SimpleEater");
+	protected final int sleepTime;
+	private int keyCounter = 0;
 
-	public SimpleEatersWorld(CountDownLatch latchDone, Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsec) {
+	public SimpleEatersWorld(Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsec) {
 		agent.RegisterForRunEvent(smlRunEventId.smlEVENT_BEFORE_INPUT_PHASE, this, null);
 		agent.AddOutputHandler(CMD_ROTATE, this, null); // by 90 degree clockwise, no argument
 		agent.AddOutputHandler(CMD_FORWARD, this, null); // no argument
 
-		done = latchDone;
-		
 		height = map.length;
 		width = map[0].length;
 		m = new MapObject[height][width];
@@ -84,11 +82,27 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		d.setCanvasSize(700, 700);
 		d.setXscale(0, width+3);
 		d.setYscale(0, height+3);
+		d.addListener(this);
 		sleepTime = sleepMsec;
 		
 		o = backupO = initialOrientation;
 		x = backupX = initialX;
 		y = backupY = initialY;
+	}
+	
+	public void keyTyped(char c)  {
+		if (++keyCounter % 2 == 1) {
+			System.out.println("Key: " + c);
+		}
+	}
+	
+	public void mouseDragged(double x, double y) {
+	}
+	
+	public void mousePressed(double x, double y) {
+	}
+	
+	public void mouseReleased(double x, double y) {
 	}
 	
 	public int getScore() {
@@ -269,7 +283,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	private void _visualizeState() {		
-		d.clear();
+		d.clear(Color.WHITE);
 		{
 			for (int row=1; row<=height; row++) {
 				_wall(1, row+1);
@@ -305,8 +319,14 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			d.line(x+2, y+2, _nextX()+2, _nextY()+2);
 			
 			d.setPenColor(Color.BLACK);
-			d.textLeft(1, 0, "Score: " + score);
-			d.textLeft(1, height+3, String.format("Time Penalty: %d", timePenalty));
+			d.textLeft(0, 0, String.format("Score: %d", score));
+			d.textLeft(width+2, 0.10, "(r)eset");
+			d.textLeft(width+2, -0.10, "e(x)it");
+			
+			d.circle(1, 1, 0.5*SIZE_WALL);
+			d.line(1, 1, 1, 1+0.4*SIZE_WALL);
+			d.line(1, 1, 1+0.2*SIZE_WALL, 1+0.2*SIZE_WALL);
+			d.text(1, 1-0.8*SIZE_WALL, String.format("%d", -timePenalty));
 		}
 		d.show();
 		d.show(sleepTime);
@@ -320,7 +340,6 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		
 		if (isDone()) {
 			agent.StopSelf();
-			done.countDown();
 		}
 	}
 
