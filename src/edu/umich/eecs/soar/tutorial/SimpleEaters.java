@@ -15,7 +15,7 @@ public class SimpleEaters {
 		final String agentName = "Eva";
 		final int agentRandomSeed = 41372;
 
-		final Orientation initialOrientation = Orientation.right;
+		final Orientation initialOrientation = Orientation.east;
 		final int initialX = 1;
 		final int initialY = 2;
 
@@ -25,7 +25,7 @@ public class SimpleEaters {
 			{ MapObject.purple, 		MapObject.wall,			MapObject.red, 			MapObject.green }, 
 		};
 		
-		final int sleepMsecs = 20;
+		final int sleepMsecs = 10;
 
 		final Kernel kernel = Kernel.CreateKernelInNewThread(kernelPort);
 		final Agent agent = kernel.CreateAgent(agentName);
@@ -35,6 +35,8 @@ public class SimpleEaters {
 		final SimpleEatersWorld world = new FullSimpleEatersWorld(latch, agent, map, initialOrientation, initialX, initialY, sleepMsecs);
 		world.setPoints(MapObject.purple, 10);
 		world.setPoints(MapObject.red, 5);
+		world.setWallPenalty(1);
+		world.setTimePenalty(1);
 
 		agent.SpawnDebugger(kernelPort, "lib/soar/SoarJavaDebugger.jar");
 		agent.LoadProductions("agent.soar");

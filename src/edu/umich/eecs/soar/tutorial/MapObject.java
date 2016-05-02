@@ -3,14 +3,12 @@ package edu.umich.eecs.soar.tutorial;
 import java.awt.Color;
 
 public enum MapObject {
-	white(Color.WHITE),
-	brown(new Color(112, 83, 7)),
-	red(Color.RED), 
-	blue(Color.BLUE), 
-	green(Color.GREEN),
-	purple(new Color(137, 4, 177)),
+	red(Color.decode("#F16745")),
+	green(Color.decode("#7BC8A4")),
+	blue(Color.decode("#4CC3D9")), 
+	purple(Color.decode("#93648D")),
 
-	wall(Color.GRAY)
+	wall(Color.decode("#404040"))
 	;
 
 	private MapObject(Color color) {

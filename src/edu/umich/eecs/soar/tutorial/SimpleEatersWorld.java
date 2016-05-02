@@ -20,10 +20,16 @@ import sml.smlRunEventId;
 public abstract class SimpleEatersWorld implements RunEventInterface, OutputEventInterface {
 	final protected String CMD_ROTATE = "rotate";
 	final protected String CMD_FORWARD = "forward";
+	
+	final protected double SIZE_WALL = 0.48;
+	final protected double SIZE_EATER = 0.40;
+	final protected double SIZE_FOOD = 0.20;
+	final protected Color COLOR_EATER_OUTER = Color.BLACK;
+	final protected Color COLOR_EATER_INNER = Color.decode("#FFC65D");
 
 	final protected CountDownLatch done;
 	final protected MapObject[][] m;
-	final protected MapObject[][] backup;
+	final protected MapObject[][] backupM;
 	final protected int foodCount;
 	final protected int height;
 	final protected int width;
@@ -31,13 +37,18 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	protected Orientation o;
 	protected int x;
 	protected int y;
+	protected Orientation backupO;
+	protected int backupX;
+	protected int backupY;
 	protected boolean moving;
 
+	protected Integer lastScore = null;
 	protected int score = 0;
 	protected int steps = 0;
 	
 	protected Map<MapObject, Integer> points = new HashMap<MapObject, Integer>();
-	protected int timePoints = 0;
+	protected int timePenalty = 0;
+	protected int wallPenalty = 0;
 
 	protected Map<MapObject, Integer> eatenCounts = new HashMap<MapObject, Integer>();
 	protected int eaten = 0;
@@ -46,7 +57,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	protected List<WMElement> wmes = new LinkedList<>();
 	
 	protected final int sleepTime;
-	protected final Draw d = new Draw();
+	protected final Draw d = new Draw("SimpleEater");
 
 	public SimpleEatersWorld(CountDownLatch latchDone, Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsec) {
 		agent.RegisterForRunEvent(smlRunEventId.smlEVENT_BEFORE_INPUT_PHASE, this, null);
@@ -58,11 +69,11 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		height = map.length;
 		width = map[0].length;
 		m = new MapObject[height][width];
-		backup = new MapObject[height][width];
+		backupM = new MapObject[height][width];
 		int foods = 0;
 		for (int row=0; row<height; row++) {
 			for (int col=0; col<width; col++) {
-				final MapObject o = backup[row][col] = m[row][col] = map[height-row-1][col];
+				final MapObject o = backupM[row][col] = m[row][col] = map[height-row-1][col];
 				if (o!=null && o!=MapObject.wall) {
 					foods++;
 				}
@@ -72,12 +83,11 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		
 		d.setXscale(0, width+1);
 		d.setYscale(0, height+1);
-		
 		sleepTime = sleepMsec;
 		
-		o = initialOrientation;
-		x = initialX;
-		y = initialY;
+		o = backupO = initialOrientation;
+		x = backupX = initialX;
+		y = backupY = initialY;
 	}
 	
 	public int getScore() {
@@ -98,12 +108,20 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 	}
 	
-	public void setTimePoints(int points) {
-		timePoints = points;
+	public void setTimePenalty(int points) {
+		timePenalty = points;
 	}
 	
-	public int getTimePoints() {
-		return timePoints;
+	public int getTimePenalty() {
+		return timePenalty;
+	}
+	
+	public void setWallPenalty(int points) {
+		wallPenalty = points;
+	}
+	
+	public int getWallPenalty() {
+		return wallPenalty;
 	}
 	
 	protected abstract boolean isDone();
@@ -146,9 +164,9 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	protected int _nextX() {
-		if (o == Orientation.left) {
+		if (o == Orientation.west) {
 			return x-1;
-		} else if (o == Orientation.right) {
+		} else if (o == Orientation.east) {
 			return x+1;
 		} else {
 			return x;
@@ -156,9 +174,9 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	protected int _nextY() {
-		if (o == Orientation.up) {
+		if (o == Orientation.north) {
 			return y+1;
-		} else if (o == Orientation.down) {
+		} else if (o == Orientation.south) {
 			return y-1;
 		} else {
 			return y;
@@ -166,8 +184,9 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	private void _updateState() {
+		lastScore = score;
+		
 		if (moving) {
-			boolean changed = false;
 			final int nextX = _nextX();
 			final int nextY = _nextY();
 			final MapObject nextO = getCellContents(nextX, nextY);
@@ -175,23 +194,24 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			if (nextO != MapObject.wall) {
 				x = nextX;
 				y = nextY;
-				changed = true;
-			}
-			
-			if (changed && nextO!=null) {
-				removeCellContents(x, y);
 				
-				score += getPoints(nextO);
-				eaten++;
-				if (!eatenCounts.containsKey(o)) {
-					eatenCounts.put(nextO, 1);
-				} else {
-					eatenCounts.put(nextO, eatenCounts.get(o)+1);
+				if (nextO!=null) {
+					removeCellContents(x, y);
+					
+					score += getPoints(nextO);
+					eaten++;
+					if (!eatenCounts.containsKey(o)) {
+						eatenCounts.put(nextO, 1);
+					} else {
+						eatenCounts.put(nextO, eatenCounts.get(o)+1);
+					}
 				}
-			}
+			} else {
+				score -= wallPenalty;
+			}			
 		}
 		
-		score += timePoints;
+		score -= timePenalty;
 		steps++;
 		moving = false;
 	}
@@ -220,6 +240,11 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		
 		_createWME(inputLink, "time", steps);
 		_createWME(inputLink, "score", score);
+		if (lastScore==null) {
+			_createWME(inputLink, "score-diff", "nil");
+		} else {
+			_createWME(inputLink, "score-diff", score-lastScore);
+		}
 		_createWME(inputLink, "x", x);
 		_createWME(inputLink, "y", y);
 		_createWME(inputLink, "orientation", o.name());
@@ -232,22 +257,27 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 	}
 	
-	private void _visualizeState() {
-		final double boxSize = 0.48;
-		final double circleSize = 0.14;
+	private void _wall(double x, double y) {
+		d.setPenColor(MapObject.wall.color);
+		d.filledSquare(x, y, SIZE_WALL);
 		
+		if (wallPenalty!=0) {
+			d.setPenColor(Color.WHITE);
+			d.text(x, y, String.valueOf(-wallPenalty));
+		}
+	}
+	
+	private void _visualizeState() {		
 		d.clear();
 		{
-			d.setPenColor(MapObject.wall.color);
-			
 			for (int row=1; row<=height; row++) {
-				d.filledSquare(0, row, boxSize);
-				d.filledSquare(width+1, row, boxSize);
+				_wall(0, row);
+				_wall(width+1, row);
 			}
 			
 			for (int col=1; col<=width; col++) {
-				d.filledSquare(col, 0, boxSize);
-				d.filledSquare(col, height+1, boxSize);
+				_wall(col, 0);
+				_wall(col, height+1);
 			}
 			
 			for (int row=0; row<height; row++) {
@@ -256,9 +286,9 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 					if (o != null) {
 						d.setPenColor(o.color);
 						if (o == MapObject.wall) {
-							d.filledSquare(col+1, row+1, boxSize);
+							_wall(col+1, row+1);
 						} else {
-							d.filledCircle(col+1, row+1, circleSize);
+							d.filledCircle(col+1, row+1, SIZE_FOOD);
 							d.setPenColor(Color.WHITE);
 							d.text(col+1, row+1, String.valueOf(getPoints(o)));
 						}
@@ -266,10 +296,10 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 				}
 			}
 			
-			d.setPenColor(Color.BLACK);
-			d.filledCircle(x+1, y+1, boxSize);
-			d.setPenColor(Color.YELLOW);
-			d.filledCircle(x+1, y+1, boxSize*.98);
+			d.setPenColor(COLOR_EATER_OUTER);
+			d.filledCircle(x+1, y+1, SIZE_EATER);
+			d.setPenColor(COLOR_EATER_INNER);
+			d.filledCircle(x+1, y+1, SIZE_EATER*.98);
 			d.setPenColor(Color.BLACK);
 			d.line(x+1, y+1, _nextX()+1, _nextY()+1);
 		}

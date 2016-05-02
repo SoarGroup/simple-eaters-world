@@ -1,7 +1,7 @@
 package edu.umich.eecs.soar.tutorial;
 
 public enum Orientation {
-	up, right, down, left;
+	north, east, south, west;
 
 	public static Orientation getOrientation(int o) {
 		o = ((o + 4) % 4);
