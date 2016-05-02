@@ -36,10 +36,6 @@ public class SimpleEaters {
 		agent.SpawnDebugger(kernelPort, "lib/soar/SoarJavaDebugger.jar");
 		agent.LoadProductions("agent.soar");
 		agent.RunSelf(1, smlRunStepSize.sml_ELABORATION);
-
-//		agent.KillDebugger();
-//		kernel.Shutdown();
-//		System.exit(0);
 	}
 
 }

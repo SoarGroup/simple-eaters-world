@@ -16,6 +16,7 @@ import sml.IntElement;
 import sml.StringElement;
 import sml.WMElement;
 import sml.smlRunEventId;
+import sml.smlRunState;
 
 public abstract class SimpleEatersWorld implements RunEventInterface, OutputEventInterface, DrawListener {
 	final protected String CMD_ROTATE = "rotate";
@@ -32,37 +33,60 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	final protected int foodCount;
 	final protected int height;
 	final protected int width;
+	
+	final protected Agent a;
 
 	protected Orientation o;
 	protected int x;
 	protected int y;
-	protected Orientation backupO;
-	protected int backupX;
-	protected int backupY;
+	final protected Orientation backupO;
+	final protected int backupX;
+	final protected int backupY;
 	protected boolean moving;
 
-	protected Integer lastScore = null;
-	protected int score = 0;
-	protected int steps = 0;
+	protected Integer lastScore;
+	protected int score;
+	protected int steps;
 	
 	protected Map<MapObject, Integer> points = new HashMap<MapObject, Integer>();
 	protected int timePenalty = 0;
 	protected int wallPenalty = 0;
 
 	protected Map<MapObject, Integer> eatenCounts = new HashMap<MapObject, Integer>();
-	protected int eaten = 0;
+	protected int eaten;
 	
-	protected Identifier inputLink = null;
 	protected List<WMElement> wmes = new LinkedList<>();
 	
 	protected final Draw d = new Draw("SimpleEater");
 	protected final int sleepTime;
 	private int keyCounter = 0;
+	
+	private void _resetState() {
+		moving = false;
+		
+		lastScore = null;
+		score = 0;
+		steps = 0;
+		
+		o = backupO;
+		x = backupX;
+		y = backupY;
+		
+		eatenCounts.clear();
+		eaten = 0;
+		
+		for (int row=0; row<height; row++) {
+			for (int col=0; col<width; col++) {
+				m[row][col] = backupM[row][col];
+			}
+		}
+	}
 
 	public SimpleEatersWorld(Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsec) {
 		agent.RegisterForRunEvent(smlRunEventId.smlEVENT_BEFORE_INPUT_PHASE, this, null);
 		agent.AddOutputHandler(CMD_ROTATE, this, null); // by 90 degree clockwise, no argument
 		agent.AddOutputHandler(CMD_FORWARD, this, null); // no argument
+		a = agent;
 
 		height = map.length;
 		width = map[0].length;
@@ -71,7 +95,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		int foods = 0;
 		for (int row=0; row<height; row++) {
 			for (int col=0; col<width; col++) {
-				final MapObject o = backupM[row][col] = m[row][col] = map[height-row-1][col];
+				final MapObject o = backupM[row][col] = map[height-row-1][col];
 				if (o!=null && o!=MapObject.wall) {
 					foods++;
 				}
@@ -85,14 +109,26 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		d.addListener(this);
 		sleepTime = sleepMsec;
 		
-		o = backupO = initialOrientation;
-		x = backupX = initialX;
-		y = backupY = initialY;
+		backupO = initialOrientation;
+		backupX = initialX;
+		backupY = initialY;
+		
+		_resetState();
 	}
 	
 	public void keyTyped(char c)  {
 		if (++keyCounter % 2 == 1) {
-			System.out.println("Key: " + c);
+			final char lc = Character.toLowerCase(c);
+			if (lc=='x') {
+				a.KillDebugger();
+				System.exit(0);
+			} else if (lc=='r') {
+				a.StopSelf();
+				while (a.GetRunState()==smlRunState.sml_RUNSTATE_RUNNING) {
+				}
+				a.InitSoar();
+				_resetState();
+			}
 		}
 	}
 	
@@ -226,7 +262,9 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			}			
 		}
 		
-		score -= timePenalty;
+		if (steps!=0) {
+			score -= timePenalty;
+		}
 		steps++;
 		moving = false;
 	}
@@ -244,15 +282,12 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	private void _updateSoar(Agent agent) {
-		if (inputLink == null) {
-			inputLink = agent.GetInputLink();
-		}
-		
 		for (WMElement wme : wmes) {
 			wme.DestroyWME();
 		}
 		wmes.clear();
-		
+
+		final Identifier inputLink = agent.GetInputLink();
 		_createWME(inputLink, "time", steps);
 		_createWME(inputLink, "score", score);
 		if (lastScore==null) {
