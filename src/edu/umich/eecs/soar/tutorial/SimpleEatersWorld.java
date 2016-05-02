@@ -81,8 +81,8 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 		foodCount = foods;
 		
-		d.setXscale(0, width+1);
-		d.setYscale(0, height+1);
+		d.setXscale(0, width+3);
+		d.setYscale(0, height+3);
 		sleepTime = sleepMsec;
 		
 		o = backupO = initialOrientation;
@@ -271,13 +271,13 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		d.clear();
 		{
 			for (int row=1; row<=height; row++) {
-				_wall(0, row);
-				_wall(width+1, row);
+				_wall(1, row+1);
+				_wall(width+2, row+1);
 			}
 			
 			for (int col=1; col<=width; col++) {
-				_wall(col, 0);
-				_wall(col, height+1);
+				_wall(col+1, 1);
+				_wall(col+1, height+2);
 			}
 			
 			for (int row=0; row<height; row++) {
@@ -286,25 +286,29 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 					if (o != null) {
 						d.setPenColor(o.color);
 						if (o == MapObject.wall) {
-							_wall(col+1, row+1);
+							_wall(col+2, row+2);
 						} else {
-							d.filledCircle(col+1, row+1, SIZE_FOOD);
+							d.filledCircle(col+2, row+2, SIZE_FOOD);
 							d.setPenColor(Color.WHITE);
-							d.text(col+1, row+1, String.valueOf(getPoints(o)));
+							d.text(col+2, row+2, String.valueOf(getPoints(o)));
 						}
 					}
 				}
 			}
 			
 			d.setPenColor(COLOR_EATER_OUTER);
-			d.filledCircle(x+1, y+1, SIZE_EATER);
+			d.filledCircle(x+2, y+2, SIZE_EATER);
 			d.setPenColor(COLOR_EATER_INNER);
-			d.filledCircle(x+1, y+1, SIZE_EATER*.98);
+			d.filledCircle(x+2, y+2, SIZE_EATER*.98);
 			d.setPenColor(Color.BLACK);
-			d.line(x+1, y+1, _nextX()+1, _nextY()+1);
+			d.line(x+2, y+2, _nextX()+2, _nextY()+2);
+			
+			d.setPenColor(Color.BLACK);
+			d.textLeft(1, 0, "Score: " + score);
+			d.textLeft(1, height+3, String.format("Time Penalty: %d", timePenalty));
 		}
 		d.show();
-		d.show( sleepTime );
+		d.show(sleepTime);
 	}
 
 	@Override
