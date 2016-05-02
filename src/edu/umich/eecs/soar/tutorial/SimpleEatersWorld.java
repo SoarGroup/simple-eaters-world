@@ -48,17 +48,17 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	protected int score;
 	protected int steps;
 	
-	protected Map<MapObject, Integer> points = new HashMap<MapObject, Integer>();
+	final protected Map<MapObject, Integer> points = new HashMap<MapObject, Integer>();
 	protected int timePenalty = 0;
 	protected int wallPenalty = 0;
 
-	protected Map<MapObject, Integer> eatenCounts = new HashMap<MapObject, Integer>();
+	final protected Map<MapObject, Integer> eatenCounts = new HashMap<MapObject, Integer>();
 	protected int eaten;
 	
-	protected List<WMElement> wmes = new LinkedList<>();
+	final protected List<WMElement> wmes = new LinkedList<>();
 	
-	protected final Draw d = new Draw("SimpleEater");
-	protected final int sleepTime;
+	final protected Draw d = new Draw("SimpleEater");
+	final protected int sleepTime;
 	private int keyCounter = 0;
 	
 	private void _resetState() {
