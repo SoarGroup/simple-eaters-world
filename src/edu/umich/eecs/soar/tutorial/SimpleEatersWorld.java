@@ -81,6 +81,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 		foodCount = foods;
 		
+		d.setCanvasSize(700, 700);
 		d.setXscale(0, width+3);
 		d.setYscale(0, height+3);
 		sleepTime = sleepMsec;
