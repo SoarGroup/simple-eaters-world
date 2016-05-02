@@ -12,6 +12,6 @@ else
 	exit 1
 fi
 
-pushd $THISDIR
+pushd $THISDIR > /dev/null
 java -Djava.library.path=$THISDIR/lib/soar -cp $THISDIR/bin:$THISDIR/lib/stdlib-package.jar:$THISDIR/lib/soar/java/sml.jar edu.umich.eecs.soar.tutorial.SimpleEaters
-popd
+popd > /dev/null
