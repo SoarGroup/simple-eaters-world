@@ -1,0 +1,24 @@
+sp {simple-RL*propose*forward
+   (state <s> ^name simple-RL
+              ^io.input-link.time)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name forward)
+}
+
+gp {simple-RL*evaluate*forward
+   (state <s> ^name simple-RL
+              ^io.input-link.front [ red wall blue empty green purple ]
+              ^operator <op1> +)
+   (<op1> ^name forward)
+-->
+   (<s> ^operator <op1> = 0.0)
+}
+
+sp {apply*forward
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name forward)
+-->
+   (<out> ^forward <f>)
+}

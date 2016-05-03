@@ -1,0 +1,3 @@
+rl -s eligibility-trace-decay-rate 0.1
+rl -s learning on
+indiff -g

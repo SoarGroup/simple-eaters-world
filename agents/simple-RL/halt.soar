@@ -1,0 +1,18 @@
+sp {simple-RL*propose*halt
+   (state <s> ^name simple-RL
+              ^io.input-link.task complete)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name halt)
+}
+
+sp {apply*halt
+   (state <s> ^operator <op>
+              ^io.input-link <input>)
+   (<op> ^name halt)
+   (<input> ^score <score>
+            ^time <time>)
+-->
+   (write (crlf) |Total Score: | <score> |, Time: | <time>)
+   (halt)
+}

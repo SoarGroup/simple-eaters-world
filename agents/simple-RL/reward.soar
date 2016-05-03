@@ -1,0 +1,7 @@
+sp {simple-RL*elaborate*state
+   (state <s> ^name simple-RL
+              ^reward-link <rl>
+              ^io.input-link.score-diff <d>)
+-->
+   (<rl> ^reward.value <d>)
+}
