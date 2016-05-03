@@ -57,6 +57,8 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	protected int eaten;
 	
 	final protected List<WMElement> wmes = new LinkedList<>();
+	final private StringElement[] orientationWmes = new StringElement[Orientation.values().length];
+	final private String[] relativeOrientations = {"front", "right", "back", "left"};
 	
 	final protected Draw d = new Draw("SimpleEater");
 	final protected int sleepTime;
@@ -164,6 +166,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	
 	public void setTimePenalty(int points) {
 		timePenalty = points;
+		_visualizeState();
 	}
 	
 	public int getTimePenalty() {
@@ -172,6 +175,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	
 	public void setWallPenalty(int points) {
 		wallPenalty = points;
+		_visualizeState();
 	}
 	
 	public int getWallPenalty() {
@@ -202,7 +206,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			boolean good = false;
 
 			if (attributeName.compareTo(CMD_ROTATE) == 0) {
-				o = Orientation.getOrientation(o.ordinal()+1);
+				o = o.getRelativeOrientation(1);
 				good = true;
 			} else if (attributeName.compareTo(CMD_FORWARD) == 0) {
 				moving = true;
@@ -218,23 +222,11 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	protected int _nextX() {
-		if (o == Orientation.west) {
-			return x-1;
-		} else if (o == Orientation.east) {
-			return x+1;
-		} else {
-			return x;
-		}
+		return o.newX.apply(x);
 	}
 	
 	protected int _nextY() {
-		if (o == Orientation.north) {
-			return y+1;
-		} else if (o == Orientation.south) {
-			return y-1;
-		} else {
-			return y;
-		}
+		return o.newY.apply(y);
 	}
 	
 	private void _updateState() {
@@ -284,6 +276,15 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		return wme;
 	}
 	
+	private String _cellWMEName(int x, int y) {
+		final MapObject nextO = getCellContents(x, y);
+		if (nextO != null) {
+			return nextO.name();
+		} else {
+			return "empty";
+		}
+	}
+	
 	private void _updateSoar(Agent agent) {
 		for (WMElement wme : wmes) {
 			wme.DestroyWME();
@@ -302,11 +303,13 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		_createWME(inputLink, "y", y);
 		_createWME(inputLink, "orientation", o.name());
 		
-		final MapObject nextO = getCellContents(_nextX(), _nextY());
-		if (nextO != null) {
-			_createWME(inputLink, "sense", nextO.name());
-		} else {
-			_createWME(inputLink, "sense", "empty");
+		for (Orientation dir : Orientation.values()) {
+			orientationWmes[dir.ordinal()] = _createWME(inputLink, dir.name(), _cellWMEName(dir.newX.apply(x), dir.newY.apply(y)));
+		}
+		
+		for (int i=0; i<relativeOrientations.length; i++) {
+			final Orientation relativeDir = o.getRelativeOrientation(i);
+			_createWME(inputLink, relativeOrientations[i], _cellWMEName(relativeDir.newX.apply(x), relativeDir.newY.apply(y)));
 		}
 	}
 	

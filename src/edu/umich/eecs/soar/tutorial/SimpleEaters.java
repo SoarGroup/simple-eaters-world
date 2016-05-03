@@ -17,7 +17,7 @@ public class SimpleEaters {
 		final MapObject[][] map = { 
 			{ MapObject.purple,			null,					MapObject.red, 			MapObject.green },
 			{ MapObject.purple, 		MapObject.red, 			MapObject.red, 			MapObject.wall },
-			{ MapObject.purple, 		MapObject.wall,			MapObject.red, 			MapObject.green }, 
+			{ MapObject.purple, 		MapObject.wall,			MapObject.red, 			MapObject.blue }, 
 		};
 		
 		final int sleepMsecs = 10;
