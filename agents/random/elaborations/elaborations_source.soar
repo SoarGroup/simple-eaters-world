@@ -1,2 +1,3 @@
 source _all.soar
+source halt.soar
 source top-state.soar

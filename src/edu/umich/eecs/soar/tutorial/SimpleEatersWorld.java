@@ -311,6 +311,10 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			final Orientation relativeDir = o.getRelativeOrientation(i);
 			_createWME(inputLink, relativeOrientations[i], _cellWMEName(relativeDir.newX.apply(x), relativeDir.newY.apply(y)));
 		}
+		
+		if (isDone()) {
+			_createWME(inputLink, "task", "complete");
+		}
 	}
 	
 	private void _wall(double x, double y) {
@@ -378,10 +382,6 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		_updateState();
 		_updateSoar(agent);
 		_visualizeState();
-		
-		if (isDone()) {
-			agent.StopSelf();
-		}
 	}
 
 }
