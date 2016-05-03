@@ -17,6 +17,7 @@ import sml.StringElement;
 import sml.WMElement;
 import sml.smlRunEventId;
 import sml.smlRunState;
+import sml.smlRunStepSize;
 
 public abstract class SimpleEatersWorld implements RunEventInterface, OutputEventInterface, DrawListener {
 	final protected String CMD_ROTATE = "rotate";
@@ -83,10 +84,10 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 
 	public SimpleEatersWorld(Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsec) {
-		agent.RegisterForRunEvent(smlRunEventId.smlEVENT_BEFORE_INPUT_PHASE, this, null);
-		agent.AddOutputHandler(CMD_ROTATE, this, null); // by 90 degree clockwise, no argument
-		agent.AddOutputHandler(CMD_FORWARD, this, null); // no argument
 		a = agent;
+		a.RegisterForRunEvent(smlRunEventId.smlEVENT_BEFORE_INPUT_PHASE, this, null);
+		a.AddOutputHandler(CMD_ROTATE, this, null); // by 90 degree clockwise, no argument
+		a.AddOutputHandler(CMD_FORWARD, this, null); // no argument
 
 		height = map.length;
 		width = map[0].length;
@@ -114,6 +115,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		backupY = initialY;
 		
 		_resetState();
+		a.RunSelf(1, smlRunStepSize.sml_ELABORATION);
 	}
 	
 	public void keyTyped(char c)  {
@@ -128,6 +130,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 				}
 				a.InitSoar();
 				_resetState();
+				a.RunSelf(1, smlRunStepSize.sml_ELABORATION);
 			}
 		}
 	}

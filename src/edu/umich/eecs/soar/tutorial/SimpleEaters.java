@@ -2,7 +2,6 @@ package edu.umich.eecs.soar.tutorial;
 
 import sml.Agent;
 import sml.Kernel;
-import sml.smlRunStepSize;
 
 public class SimpleEaters {
 
@@ -35,7 +34,6 @@ public class SimpleEaters {
 
 		agent.SpawnDebugger(kernelPort, "lib/soar/SoarJavaDebugger.jar");
 		agent.LoadProductions("agent.soar");
-		agent.RunSelf(1, smlRunStepSize.sml_ELABORATION);
 	}
 
 }
