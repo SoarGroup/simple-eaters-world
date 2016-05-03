@@ -285,13 +285,13 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 	}
 	
-	private void _updateSoar(Agent agent) {
+	private void _updateSoar() {
 		for (WMElement wme : wmes) {
 			wme.DestroyWME();
 		}
 		wmes.clear();
 
-		final Identifier inputLink = agent.GetInputLink();
+		final Identifier inputLink = a.GetInputLink();
 		_createWME(inputLink, "time", steps);
 		_createWME(inputLink, "score", score);
 		if (lastScore==null) {
@@ -380,7 +380,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	@Override
 	public void runEventHandler(int eventID, Object data, Agent agent, int phase) {
 		_updateState();
-		_updateSoar(agent);
+		_updateSoar();
 		_visualizeState();
 	}
 
