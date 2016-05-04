@@ -44,6 +44,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	final protected int backupX;
 	final protected int backupY;
 	protected boolean moving;
+	protected boolean outputProcessed;
 
 	protected Integer lastScore;
 	protected int score;
@@ -66,6 +67,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	
 	private void _resetState() {
 		moving = false;
+		outputProcessed = false;
 		
 		lastScore = null;
 		score = 0;
@@ -205,16 +207,19 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		if (id != null) {
 			boolean good = false;
 
-			if (attributeName.compareTo(CMD_ROTATE) == 0) {
-				o = o.getRelativeOrientation(1);
-				good = true;
-			} else if (attributeName.compareTo(CMD_FORWARD) == 0) {
-				moving = true;
-				good = true;
+			if (!outputProcessed) {
+				if (attributeName.compareTo(CMD_ROTATE) == 0) {
+					o = o.getRelativeOrientation(1);
+					good = true;
+				} else if (attributeName.compareTo(CMD_FORWARD) == 0) {
+					moving = true;
+					good = true;
+				}
 			}
 
 			if (good) {
 				id.AddStatusComplete();
+				outputProcessed = true;
 			} else {
 				id.AddStatusError();
 			}
@@ -262,6 +267,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 		steps++;
 		moving = false;
+		outputProcessed = false;
 	}
 	
 	protected IntElement _createWME(Identifier id, String attribute, int value) {
