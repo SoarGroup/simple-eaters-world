@@ -1,0 +1,6 @@
+source elaborations.soar
+source forward.soar
+pushd forward
+source forward_source.soar
+popd
+source rotate.soar

@@ -1,0 +1,49 @@
+sp {hierarchical-agent*propose*move
+   (state <s> ^name hierarchical-agent
+              ^io.input-link <input>
+              ^{ << north south east west >> <dir> } <value>
+              ^x <x>
+              ^y <y>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name move
+         ^direction <dir>
+         ^value <value>)
+}
+
+gp {hierarchical-agent*evaluate*move
+   (state <s> ^name hierarchical-agent
+              ^<dir> [ red wall blue empty green purple ]
+              ^operator <op1> +)
+   (<op1> ^name move
+          ^direction <dir>)
+-->
+   (<s> ^operator <op1> = 0.0)
+}
+
+sp {apply*move
+   (state <s> ^operator <op>)
+   (<op> ^name move
+         ^direction <dir>
+         ^value <value>)
+-->
+   (write (crlf) |Move: | <dir> |: | <value>)
+}
+
+sp {hierarchical-agent*reject*move*fail
+   (state <s> ^name hierarchical-agent
+              ^operator <op1> +)
+   (<op1> ^name move
+          ^failed true)
+-->
+   (<s> ^operator <op1> -)
+}
+
+sp {hierarchical-agent*reject*move*collide
+   (state <s> ^name hierarchical-agent
+              ^io.input-link.score-diff -2
+              ^operator <op1> +)
+   (<op1> ^name move)
+-->
+   (<s> ^operator <op1> -)
+}

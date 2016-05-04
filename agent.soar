@@ -1,2 +1,3 @@
 source agents/random.soar
 #source agents/simple-RL.soar
+#source agents/hierarchical-agent.soar

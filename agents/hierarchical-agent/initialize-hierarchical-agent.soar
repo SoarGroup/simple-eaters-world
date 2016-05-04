@@ -1,0 +1,15 @@
+sp {propose*initialize-hierarchical-agent
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-hierarchical-agent)
+}
+
+sp {apply*initialize-hierarchical-agent
+   (state <s> ^operator <op>)
+   (<op> ^name initialize-hierarchical-agent)
+-->
+   (<s> ^name hierarchical-agent)
+}
+

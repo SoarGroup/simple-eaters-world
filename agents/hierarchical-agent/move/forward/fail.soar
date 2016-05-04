@@ -1,0 +1,17 @@
+sp {forward*propose*fail
+   (state <s> ^name forward
+              ^quiescence t)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name fail)
+}
+
+sp {apply*fail
+   (state <s> ^operator <op>
+              ^top-state <ts>)
+   (<op> ^name fail)
+   (<ts> ^operator <so>)
+-->
+   (<so> ^failed true)
+  # (<ts> ^failed true)
+}

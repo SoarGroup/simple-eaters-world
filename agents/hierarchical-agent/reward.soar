@@ -1,0 +1,7 @@
+sp {simple-RL*elaborate*state
+   (state <s> ^name hierarchical-agent
+              ^reward-link <rl>
+              ^io.input-link.score-diff <d>)
+-->
+   (<rl> ^reward.value <d>)
+}
