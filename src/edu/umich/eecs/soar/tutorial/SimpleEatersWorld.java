@@ -2,6 +2,7 @@ package edu.umich.eecs.soar.tutorial;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,9 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	final protected Map<MapObject, Integer> points = new HashMap<MapObject, Integer>();
 	protected int timePenalty = 0;
 	protected int wallPenalty = 0;
+	
+	protected boolean justRotated = false;      // true if the last action by the agent was "rotate"
+	protected boolean justMovedForward = false; // true if the last action by the agent was "forward"
 
 	final protected Map<MapObject, Integer> eatenCounts = new HashMap<MapObject, Integer>();
 	protected int eaten;
@@ -211,9 +215,13 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 				if (attributeName.compareTo(CMD_ROTATE) == 0) {
 					o = o.getRelativeOrientation(1);
 					good = true;
+					justRotated = true;
+					justMovedForward = false;
 				} else if (attributeName.compareTo(CMD_FORWARD) == 0) {
 					moving = true;
 					good = true;
+					justMovedForward = true;
+					justRotated = false;
 				}
 			}
 
@@ -262,7 +270,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			}			
 		}
 		
-		if (steps!=0) {
+		if (steps!=0 && (justRotated || justMovedForward)) {
 			score -= timePenalty;
 		}
 		steps++;
@@ -291,11 +299,27 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		}
 	}
 	
-	private void _updateSoar() {
-		for (WMElement wme : wmes) {
-			wme.DestroyWME();
+	private boolean _noUpdateOnRotate(String attribute) {
+		final String wmes[] = {"north", "south", "east", "west", "x", "y"};
+		for (String dir : wmes) {
+			if (dir.compareTo(attribute) == 0) {
+				return true;
+			}
 		}
-		wmes.clear();
+		return false;
+	}
+	
+	private void _updateSoar() {
+		// Remove WMEs that need to be updated
+		Iterator<WMElement> wmeIter = wmes.iterator();
+		while (wmeIter.hasNext()) {
+			WMElement wme = wmeIter.next();
+			if (justRotated && _noUpdateOnRotate(wme.GetAttribute())) {
+				continue;
+			}
+			wme.DestroyWME();
+			wmeIter.remove();
+		}
 
 		final Identifier inputLink = a.GetInputLink();
 		_createWME(inputLink, "time", steps);
@@ -305,13 +329,16 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		} else {
 			_createWME(inputLink, "score-diff", score-lastScore);
 		}
-		_createWME(inputLink, "x", x);
-		_createWME(inputLink, "y", y);
-		_createWME(inputLink, "orientation", o.name());
 		
-		for (Orientation dir : Orientation.values()) {
-			orientationWmes[dir.ordinal()] = _createWME(inputLink, dir.name(), _cellWMEName(dir.newX.apply(x), dir.newY.apply(y)));
+		if (!justRotated) {
+			_createWME(inputLink, "x", x);
+			_createWME(inputLink, "y", y);
+			for (Orientation dir : Orientation.values()) {
+				orientationWmes[dir.ordinal()] = _createWME(inputLink, dir.name(), _cellWMEName(dir.newX.apply(x), dir.newY.apply(y)));
+			}
 		}
+
+		_createWME(inputLink, "orientation", o.name());
 		
 		for (int i=0; i<relativeOrientations.length; i++) {
 			final Orientation relativeDir = o.getRelativeOrientation(i);
@@ -322,7 +349,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			_createWME(inputLink, "task", "complete");
 		}
 	}
-	
+
 	private void _wall(double x, double y) {
 		d.setPenColor(MapObject.wall.color);
 		d.filledSquare(x, y, SIZE_WALL);
@@ -388,6 +415,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		_updateState();
 		_updateSoar();
 		_visualizeState();
+		justRotated = justMovedForward = false;
 	}
 
 }

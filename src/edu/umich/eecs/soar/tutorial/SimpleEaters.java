@@ -27,9 +27,11 @@ public class SimpleEaters {
 		agent.ExecuteCommandLine("srand " + agentRandomSeed);
 
 		final SimpleEatersWorld world = new FullSimpleEatersWorld(agent, map, initialOrientation, initialX, initialY, sleepMsecs);
-		world.setPoints(MapObject.purple, 10);
 		world.setPoints(MapObject.red, 5);
-		world.setWallPenalty(1);
+		world.setPoints(MapObject.purple, 10);
+		world.setPoints(MapObject.green, 15);
+		world.setPoints(MapObject.blue, 20);
+		world.setWallPenalty(10);
 		world.setTimePenalty(1);
 
 		agent.SpawnDebugger(kernelPort, "lib/soar/SoarJavaDebugger.jar");
