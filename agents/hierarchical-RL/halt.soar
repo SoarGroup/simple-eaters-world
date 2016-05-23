@@ -1,0 +1,18 @@
+sp {hierarchical-RL*propose*halt
+   (state <s> ^name hierarchical-RL
+              ^io.input-link.task complete)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name halt)
+}
+
+sp {hierarchical-RL*apply*halt
+   (state <s> ^operator <op>
+              ^io.input-link <input>)
+   (<op> ^name halt)
+   (<input> ^score <score>
+            ^time <time>)
+-->
+   (write (crlf) |Total Score: | <score> |, Time: | <time>)
+   (halt)
+}

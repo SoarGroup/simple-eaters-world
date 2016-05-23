@@ -1,0 +1,17 @@
+sp {hierachical-reward*move*propose*rotate
+   (state <s> ^name move
+              ^move-direction <> <dir>
+              ^io.input-link.orientation <dir>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name rotate)
+}
+
+sp {hierarchical-reward*move*apply*rotate
+   (state <s> ^operator <op>
+              ^io.output-link <ol>)
+   (<op> ^name rotate)
+-->
+   (<ol> ^rotate <r>)
+}
+

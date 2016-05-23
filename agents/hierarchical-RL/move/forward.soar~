@@ -1,0 +1,13 @@
+sp {hierarchical-rl*move*propose*forward
+   (state <s> ^name move
+              ^move-direction <dir>
+              ^io.input-link.orientation <dir>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name forward)
+}
+
+sp {hierarchical-rl*move*apply*forward
+   (state <s> ^operator <op>
+              ^io.output-link <ol>)
+   (<op> ^name forward

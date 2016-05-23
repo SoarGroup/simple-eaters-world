@@ -1,0 +1,14 @@
+sp {propose*initialize-hierarchical-RL
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-hierarchical-RL)
+}
+
+sp {apply*initialize-hierarchical-RL
+   (state <s> ^operator <op>)
+   (<op> ^name initialize-hierarchical-RL)
+-->
+   (<s> ^name hierarchical-RL)
+}

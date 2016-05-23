@@ -1,0 +1,22 @@
+sp {propose*initialize-random
+   (state <s> ^superstate nil
+             -^name
+              ^io.input-link <il>)
+   (<il> ^x <x>
+         ^y <y>)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-random
+        ^x <x>
+        ^y <y>)
+}
+
+sp {apply*initialize-random
+   (state <s> ^operator <op>)
+   (<op> ^name initialize-random
+         ^x <x>
+         ^y <y>)
+-->
+   (<s> ^name random)
+}
+

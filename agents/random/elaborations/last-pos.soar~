@@ -1,0 +1,12 @@
+sp {elaborate*record*last-position
+   (state <s> ^name random
+              ^io.input-link <il>
+              ^current-position-x <cpx>
+              ^current-position-y <cpy>
+              ^last-position-x <lpx>
+              ^last-position-y <lpy>)
+   (<il> ^x <x>
+         ^y <y>)
+-->
+
+}

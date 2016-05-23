@@ -1,0 +1,7 @@
+sp {hierarchical-reward*halt
+   (state <s> ^name hierarchical-reward
+              ^io.input-link.task complete)
+-->
+   (halt)
+}
+

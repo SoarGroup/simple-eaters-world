@@ -1,0 +1,15 @@
+sp {propose*initialize-hierarchical-reward
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-hierarchical-reward)
+}
+
+sp {apply*initialize-hierarchical-reward
+   (state <s> ^operator <op>)
+   (<op> ^name initialize-hierarchical-reward)
+-->
+   (<s> ^name hierarchical-reward)
+}
+

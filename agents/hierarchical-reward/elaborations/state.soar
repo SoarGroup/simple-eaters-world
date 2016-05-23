@@ -1,0 +1,12 @@
+sp {hierarchical-reward*elaborate*state
+   (state <s> ^superstate.operator <o>)
+   (<o> ^name <name>)
+-->
+   (<s> ^name <name>)
+}
+
+sp {hierarchical-reward*elaborate*state*io
+   (state <s> ^superstate.io <io>)
+-->
+   (<s> ^io <io>)
+}

@@ -55,8 +55,8 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	protected int timePenalty = 0;
 	protected int wallPenalty = 0;
 	
-	protected boolean justRotated = false;      // true if the last action by the agent was "rotate"
-	protected boolean justMovedForward = false; // true if the last action by the agent was "forward"
+	protected Boolean justRotated;      // true, if the last action by the agent was "rotate"
+	protected Boolean justMovedForward; // true, if the last action by the agent was "forward"
 
 	final protected Map<MapObject, Integer> eatenCounts = new HashMap<MapObject, Integer>();
 	protected int eaten;
@@ -310,11 +310,19 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	}
 	
 	private void _updateSoar() {
+		
 		// Remove WMEs that need to be updated
 		Iterator<WMElement> wmeIter = wmes.iterator();
 		while (wmeIter.hasNext()) {
 			WMElement wme = wmeIter.next();
-			if (justRotated && _noUpdateOnRotate(wme.GetAttribute())) {
+			
+			// On the first pass, justMovedForward is null, but that is fine since
+			//  there the list of WME's is empty. On the following passes, 
+			//  justMovedForward will be true only when the agent just moved forward
+			//  this means that the cardinal directions and x,y location will be updated
+			//  on the first pass and whenever we move forward
+			
+			if (!justMovedForward && _noUpdateOnRotate(wme.GetAttribute())) {
 				continue;
 			}
 			wme.DestroyWME();
@@ -330,7 +338,10 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			_createWME(inputLink, "score-diff", score-lastScore);
 		}
 		
-		if (!justRotated) {
+		// We only want to update the cardinal directions and the x,y location
+		//  on the first pass (in order to populate the input-link) and when we 
+		//  just moved forward
+		if (justMovedForward == null || justMovedForward) {
 			_createWME(inputLink, "x", x);
 			_createWME(inputLink, "y", y);
 			for (Orientation dir : Orientation.values()) {

@@ -1,0 +1,14 @@
+source _firstload.soar
+pushd all
+source all_source.soar
+popd
+pushd elaborations
+source elaborations_source.soar
+popd
+source reward.soar
+source halt.soar
+source initialize-hierarchical-RL.soar
+source move.soar
+pushd move
+source move_source.soar
+popd

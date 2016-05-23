@@ -1,0 +1,17 @@
+VERSION 4
+/hierarchical-RL/hierarchical-RL.dm
+0	ROOT hierarchical-RL hierarchical-RL 1
+1	0	FOPERATOR _firstload _firstload.soar 2
+2	0	FOLDER all all 3
+3	0	FOLDER elaborations elaborations 4
+4	3	FOPERATOR _all _all.soar 5
+5	3	FOPERATOR state state.soar 7
+6	3	FOPERATOR top-state top-state.soar 8
+7	0	FOPERATOR reward reward.soar 16
+8	0	OPERATOR halt halt.soar 9
+9	0	OPERATOR initialize-hierarchical-RL initialize-hierarchical-RL.soar 15
+10	0	HLOPERATOR move move.soar move 11 11
+11	10	FOPERATOR elaborations elaborations.soar 12
+12	10	OPERATOR forward forward.soar 13
+13	10	OPERATOR rotate rotate.soar 14
+END

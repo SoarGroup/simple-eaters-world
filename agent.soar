@@ -1,3 +1,6 @@
-source agents/random.soar
+#source agents/random.soar
 #source agents/simple-RL.soar
 #source agents/hierarchical-agent.soar
+source agents/hierarchical-RL.soar
+#source agents/hierarchical-reward.soar
+

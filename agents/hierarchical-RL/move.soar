@@ -1,0 +1,23 @@
+sp {hierarchical-RL*propose*move
+   (state <s> ^name hierarchical-RL
+              ^io.input-link <il>)
+   (<il> ^{ << north south east west >> <dir> } <map-object>
+         ^x <x>
+         ^y <y>)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name move
+         ^dir <dir>
+         ^map-object <map-object>)
+}
+
+gp {hierarchical-RL*select*move
+   (state <s> ^name hierarchical-RL
+              ^operator <op1> +
+              ^io.input-link <il>)
+   (<il> ^<dir> [ red purple green blue empty wall ])
+   (<op1> ^name move
+          ^dir <dir>)
+-->
+   (<s> ^operator <op1> = 0.0)
+}
