@@ -14,4 +14,9 @@ public class LimitedStepsSimpleEatersWorld extends SimpleEatersWorld {
 	protected boolean isDone() {
 		return (steps == maxSteps);
 	}
+
+	@Override
+	protected void _updateSoar() {
+		_updateEssentialsSoar();
+	}
 }

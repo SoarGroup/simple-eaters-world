@@ -309,8 +309,10 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 		return false;
 	}
 	
-	private void _updateSoar() {
-		
+	
+	protected abstract void _updateSoar();
+	
+	protected void _updateEssentialsSoar() {
 		// Remove WMEs that need to be updated
 		Iterator<WMElement> wmeIter = wmes.iterator();
 		while (wmeIter.hasNext()) {
@@ -318,8 +320,8 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 			
 			// On the first pass, justMovedForward is null, but that is fine since
 			//  there the list of WME's is empty. On the following passes, 
-			//  justMovedForward will be true only when the agent just moved forward
-			//  this means that the cardinal directions and x,y location will be updated
+			//  justMovedForward will be true only when the agent just moved forward.
+			//  This means that the cardinal directions and x,y location will be updated
 			//  on the first pass and whenever we move forward
 			
 			if (!justMovedForward && _noUpdateOnRotate(wme.GetAttribute())) {

@@ -12,5 +12,10 @@ public class FullSimpleEatersWorld extends SimpleEatersWorld {
 	protected boolean isDone() {
 		return (foodCount == eaten);
 	}
+	
+	@Override
+	protected void _updateSoar() {
+		_updateEssentialsSoar();
+	}
 
 }
