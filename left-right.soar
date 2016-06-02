@@ -1,5 +1,6 @@
-rl --set learning on
-indifferent-selection --epsilon-greedy
+rl -s learning on # enable RL
+indiff -g # use epsilon-greedy decision making
+indiff -e 0.1 # 10% deviation from greedy
 
 sp {propose*initialize-left-right
    (state <s> ^superstate nil
