@@ -1,3 +1,3 @@
 pushd hierarchical-RL
-source hierarchical-RL_source.soar
+source hierarchical-rl_source.soar
 popd
