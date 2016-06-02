@@ -1,0 +1,102 @@
+rl --set learning on
+indifferent-selection --epsilon-greedy
+
+sp {propose*initialize-left-right
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-left-right)
+}
+
+##
+# Store the available directions
+# and associated reward on the state
+##
+sp {apply*initialize-left-right
+   (state <s> ^operator <op>)
+   (<op> ^name initialize-left-right)
+-->
+   (<s> ^name left-right
+        ^direction <d1> <d2>
+        ^location start)
+   (<d1> ^name left ^reward -1)
+   (<d2> ^name right ^reward 1)
+}
+
+##
+# Propose moving in any available direction
+##
+sp {left-right*propose*move
+   (state <s> ^name left-right
+              ^direction <d>
+              ^location start)
+   (<d> ^name <dir>)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name move
+         ^dir <dir>)
+}
+
+##
+# Soar-RL rule for moving left
+##
+sp {left-right*rl*left
+   (state <s> ^name left-right
+              ^operator <op> +)
+   (<op> ^name move
+         ^dir left)
+-->
+   (<s> ^operator <op> = 0)
+}
+
+##
+# Soar-RL rule for moving right
+##
+sp {left-right*rl*right
+   (state <s> ^name left-right
+              ^operator <op> +)
+   (<op> ^name move
+         ^dir right)
+-->
+   (<s> ^operator <op> = 0)
+}
+
+##
+# When a direction is chosen:
+# - change location
+# - output choice
+##
+sp {apply*move
+   (state <s> ^operator <op>
+              ^location start)
+   (<op> ^name move
+         ^dir <dir>)
+-->
+   (<s> ^location start - <dir>)
+   (write (crlf) |Moved: | <dir>)
+}
+
+##
+# When a direction is chosen, assert the associated reward
+##
+sp {elaborate*reward
+   (state <s> ^name left-right
+              ^reward-link <r>
+              ^location <d-name>
+              ^direction <dir>)
+   (<dir> ^name <d-name> ^reward <d-reward>)
+-->
+   (<r> ^reward <rr>)
+   (<rr> ^value <d-reward>)
+}
+
+##
+# When a direction is chosen, halt
+##
+sp {elaborate*done
+   (state <s> ^name left-right
+              ^location {<> start})
+-->
+   (halt)
+}
