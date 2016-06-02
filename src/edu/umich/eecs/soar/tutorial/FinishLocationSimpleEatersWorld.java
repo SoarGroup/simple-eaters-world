@@ -6,7 +6,7 @@ import sml.Identifier;
 public class FinishLocationSimpleEatersWorld extends SimpleEatersWorld {
 	final private int finalX, finalY; 
 	
-	public FinishLocationSimpleEatersWorld(Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsecs, int maxSteps, int finalX, int finalY) {
+	public FinishLocationSimpleEatersWorld(Agent agent, MapObject[][] map, Orientation initialOrientation, int initialX, int initialY, int sleepMsecs, int finalX, int finalY) {
 		super(agent, map, initialOrientation, initialX, initialY, sleepMsecs);
 		this.finalX = finalX;
 		this.finalY = finalY;
