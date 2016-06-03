@@ -13,6 +13,8 @@ public class SimpleEaters {
 		final Orientation initialOrientation = Orientation.east;
 		final int initialX = 1;
 		final int initialY = 2;
+		final int finalX = 1;
+		final int finalY = 2;
 
 		final MapObject[][] map = { 
 			{ MapObject.purple,			null,					MapObject.red, 			MapObject.green },
@@ -26,7 +28,7 @@ public class SimpleEaters {
 		final Agent agent = kernel.CreateAgent(agentName);
 		agent.ExecuteCommandLine("srand " + agentRandomSeed);
 
-		final SimpleEatersWorld world = new FullSimpleEatersWorld(agent, map, initialOrientation, initialX, initialY, sleepMsecs);
+		final SimpleEatersWorld world = new FinishLocationSimpleEatersWorld(agent, map, initialOrientation, initialX, initialY, sleepMsecs, finalX, finalY);
 		world.setPoints(MapObject.red, 5);
 		world.setPoints(MapObject.purple, 10);
 		world.setPoints(MapObject.green, 15);
