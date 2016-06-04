@@ -1,0 +1,98 @@
+# If there the top state does not have the name “color-block” 
+# then propose the operator to initialize-color-blocks. 
+sp {propose*initialize-color-blocks
+    (state <s> ^superstate nil
+              -^name color-block)
+    -->
+    (<s> ^operator <o> +)
+    (<o> ^name initialize-color-blocks)}
+# If the initialize-color-blocks operator is selected, 
+# then add the name to the state and add the colors, and create the blocks A, B, and C.
+sp {apply*initialize-color-blocks
+    (state <s> ^operator.name initialize-color-blocks)
+    -->
+    (<s> ^name color-block
+         ^color red green blue
+         ^block <b1> <b2> <b3>)
+    (<b1> ^type block
+          ^count 0
+          ^color white
+          ^name A)
+    (<b2> ^type block
+          ^count 0
+          ^color white
+          ^name B)
+    (<b3> ^type block
+          ^count 0
+          ^color white
+          ^name C)}
+
+sp {propose*color-block
+    (state <s> ^color <color>
+               ^block <block>)
+    (<block> ^color <> <color>)
+    -->
+    (<s> ^operator <o> +)
+    (<s> ^operator <o> =) 
+    (<o> ^name color-block
+         ^color <color>
+         ^block <block>)}
+sp {apply*color-block
+   (state <s> ^operator <o>)
+   (<o> ^name color-block
+        ^color <color>
+        ^block <block>)
+   (<block> ^name <name>
+            ^color <old-color>)
+ -->
+   (write (crlf) |Paint block | <name> | | <color>)
+   (<block> ^color <old-color> -
+            ^color <color>)}
+
+sp {prefer*color-red   
+    (state <s> ^operator <o> +)
+    (<o> ^color red)
+    -->
+    (<s> ^operator <o> >)}
+sp {prefer*avoid*color-green  
+    (state <s> ^operator <o> +)
+    (<o> ^color << green blue >>)
+    -->
+    (<s> ^operator <o> <)}
+
+# alternative
+sp {prefer*color-red-to-blue  
+    (state <s> ^operator <o1> +
+               ^operator <o2> +)
+    (<o1> ^color red)
+    (<o2> ^color blue)
+    -->
+    (<s> ^operator <o1> > <o2>)}
+
+sp {detect*color-red   
+    (state <s> ^block <a> <b> <c>)
+    (<a> ^name A ^color red)
+    (<b> ^name B ^color red)
+    (<c> ^name C ^color red)
+    -->
+    (halt)}
+
+sp {apply*color-block*count
+    (state <s> ^operator <o>)
+    (<o> ^name color-block
+         ^block <block>)
+    (<block> ^count <count>)
+    -->
+    (<block> ^count <count> -
+             ^count (+ 1 <count>))}
+
+sp {detect*color-red*count  
+    (state <s> ^block <a> <b> <c>)
+    (<a> ^name A ^color red ^count <countA>)
+    (<b> ^name B ^color red ^count <countB>)
+    (<c> ^name C ^color red ^count <countC>)
+    -->
+    (write (crlf) |A: | <countA> |, B: | <countB> |, C: | <countC>)
+    (halt)}
+
+
