@@ -1,0 +1,7 @@
+sp {hierarchical-SMEM*halt
+   (state <s> ^name hierarchical-SMEM
+              ^io.input-link.task complete)
+-->
+   (halt)
+}
+

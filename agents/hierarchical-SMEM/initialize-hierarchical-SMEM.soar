@@ -1,0 +1,16 @@
+sp {propose*initialize-hierarchical-SMEM
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-hierarchical-SMEM)
+}
+
+sp {apply*initialize-hierarchical-SMEM
+   (state <s> ^operator <op>
+              ^smem.command <cmd>)
+   (<op> ^name initialize-hierarchical-SMEM)
+-->
+   (<s> ^name hierarchical-SMEM)
+}
+

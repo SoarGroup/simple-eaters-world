@@ -1,0 +1,18 @@
+VERSION 4
+/hierarchical-SMEM/hierarchical-SMEM.dm
+0	ROOT hierarchical-SMEM hierarchical-SMEM 1
+1	0	FOPERATOR _firstload _firstload.soar 2
+2	0	FOLDER all all 3
+3	0	FOLDER elaborations elaborations 4
+4	3	FOPERATOR _all _all.soar 5
+5	3	FOPERATOR reward reward.soar 6
+6	3	FOPERATOR state state.soar 7
+7	3	FOPERATOR top-state top-state.soar 8
+8	0	OPERATOR evaluate-move evaluate-move.soar 9
+9	0	OPERATOR halt halt.soar 10
+10	0	OPERATOR initialize-hierarchical-SMEM initialize-hierarchical-SMEM.soar 11
+11	0	HLOPERATOR move move.soar move 11 12
+12	11	FOPERATOR elaborations elaborations.soar 13
+13	11	OPERATOR forward forward.soar 14
+14	11	OPERATOR rotate rotate.soar 15
+END
