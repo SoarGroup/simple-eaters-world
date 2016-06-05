@@ -1,0 +1,165 @@
+### setup smem & soar
+### - set full path to wn.db below
+#smem --set timers three
+smem --set path wn.db
+smem --set database file
+smem --set learning on
+
+w 0
+
+### general
+sp {elaborate*state*name
+   (state <s> ^superstate.operator.name <name>)
+-->
+   (<s> ^name <name>)
+}
+
+sp {elaborate*state*top-state
+   (state <s> ^superstate.top-state <ts>)
+-->
+   (<s> ^top-state <ts>)
+}
+
+sp {elaborate*top-state*top-state
+   (state <s> ^superstate nil)
+-->
+   (<s> ^top-state <s>)
+}
+
+
+### initialize agent 
+### (change word/pos in apply if desired)
+sp {propose*initialize-wn-senses
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name initialize-wn-senses)
+}
+
+sp {apply*initialize-wn-senses
+   (state <s> ^operator <op>)
+   (<op> ^name initialize-wn-senses)
+-->
+   (<s> ^name wn-senses
+        ^lex soar
+        ^pos v
+        ^written <b>
+        ^counted 1)
+}
+
+### initial query
+sp {wn-senses*propose*query
+   (state <s> ^name wn-senses
+              ^lex
+             -^smem.command.query)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name query)
+}
+
+sp {apply*query
+   (state <s> ^operator <op>
+              ^lex <lex>
+              ^pos <pos>
+              ^smem.command <cmd>)
+   (<op> ^name query)
+-->
+   (<cmd> ^query <q>)
+   (<q> ^isa s
+        ^word <lex>
+        ^ss-type <pos>)
+}
+
+### gloss subgoal
+sp {wn-senses*propose*gloss
+   (state <s> ^name wn-senses
+              ^smem.result.retrieved <sense>
+              ^written <w>)
+  -(<w> ^sense <sense>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name gloss)
+}
+
+sp {gloss*propose*g-query
+   (state <s> ^name gloss
+             -^smem.command.query)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name g-query)
+}
+
+sp {apply*g-query
+   (state <s> ^operator <op>
+              ^superstate <ss>
+              ^smem.command <cmd>)
+   (<op> ^name g-query)
+   (<ss> ^smem.result.retrieved.synset-id <synset>
+         ^counted <c>)
+-->
+   (<s> ^counted <c>)
+   (<cmd> ^query <q>)
+   (<q> ^isa g
+        ^synset-id <synset>)
+}
+
+sp {gloss*propose*g-write
+   (state <s> ^name gloss
+              ^smem.result.<< success failure >>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name g-write)
+}
+
+sp {apply*g-write*write
+   (state <s> ^operator <op>
+              ^counted <c>
+              ^smem.result.retrieved <r>)
+   (<op> ^name g-write)
+   (<r> ^synset-id <synset>
+        ^gloss <g>)
+-->
+   (write (crlf) <synset> | (| <c> |): | <g> (crlf))
+}
+
+sp {apply*g-write*written
+   (state <s> ^operator <op>
+              ^superstate <ss>)
+   (<op> ^name g-write)
+   (<ss> ^written <w>
+         ^counted <c>
+         ^smem.result.retrieved <sense>)
+-->
+   (<w> ^sense <sense>)
+   (<ss> ^counted <c> -)
+   (<ss> ^counted (+ <c> 1))
+}
+
+
+### reflect all written senses in prohibit list
+sp {elaborate*prohibit
+   (state <s> ^name wn-senses
+              ^smem.command <cmd>
+              ^written.sense <sense>)
+   (<cmd> ^query)
+-->
+   (<cmd> ^prohibit <sense>)
+}
+
+
+### detect completion
+sp {wn-senses*propose*done
+   (state <s> ^name wn-senses
+              ^smem.result.failure)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name done)
+}
+
+sp {apply*done
+   (state <s> ^operator <op>)
+   (<op> ^name done)
+-->
+   (halt)
+}
