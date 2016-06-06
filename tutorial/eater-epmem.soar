@@ -1,0 +1,234 @@
+epmem --set learning on
+indiff -g
+indiff -e .01
+
+# Initialization operator
+sp {propose*initialize-eater
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name eater)
+}
+
+sp {apply*initialize-eater
+   (state <s> ^operator <op>)
+   (<op> ^name eater)
+-->
+   (<s> ^name eater
+        ^direction north south east west)
+}
+
+# cleans the output-link once commands complete
+sp {apply*cleanup*output-link
+   (state <s> ^operator <op>
+              ^superstate nil
+              ^io.output-link <out>)
+   (<out> ^<cmd> <id>)
+   (<id> ^status)
+-->
+   (<out> ^<cmd> <id> -)
+}
+
+# misc useful elaboration rules
+sp {elaborate*state*name
+   (state <s> ^superstate.operator.name <name>)
+-->
+   (<s> ^name <name>)
+}
+
+sp {elaborate*state*top-state
+   (state <s> ^superstate.top-state <ts>)
+-->
+   (<s> ^top-state <ts>)
+}
+
+sp {elaborate*top-state*top-state
+   (state <s> ^superstate nil)
+-->
+   (<s> ^top-state <s>)
+}
+
+sp {elaborate*state*io
+   (state <s> ^superstate.io <io>)
+-->
+   (<s> ^io <io>)
+}
+
+####
+
+sp {end
+   (state <s> ^io.input-link.food-remaining 0)
+-->
+   (halt)
+}
+
+sp {propose*move
+   (state <s> ^name eater
+              ^direction <d>
+              ^io.input-link.<d> <contents> <> wall)
+-->
+   (<s> ^operator <op> +)
+   (<op> ^name move
+         ^direction <d>
+         ^contents <contents>)
+}
+
+sp {eater*elaborate*move-tie
+   (state <s> ^impasse tie
+              ^attribute operator
+              ^choices multiple
+              ^superstate.name eater)
+-->
+   (<s> ^name move-tie)
+}
+
+sp {propose*move-tie*evaluate
+   (state <s> ^name move-tie
+              ^item <ss-op>
+             -^evaluated.name <contents>)
+   (<ss-op> ^direction <d>
+            ^contents <contents>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name evaluate
+         ^contents <contents>)
+}
+
+#### EPMEM ME #####
+
+sp {propose*evaluate*query
+   (state <s> ^name evaluate
+             -^epmem.command.query
+             -^epmem.command.next)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name query)
+}
+
+sp {apply*query
+   (state <s> ^operator <op>
+              ^epmem.command <cmd>
+              ^superstate.operator.contents <c>)
+   (<op> ^name query)
+-->
+   (<cmd> ^query <q>)
+   (<q> ^operator.contents <c>)
+}
+
+sp {propose*evaluate*result
+   (state <s> ^name evaluate
+              ^epmem.command.query
+              ^epmem.result.<< success failure >>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name result)
+}
+
+sp {apply*result*failure
+   (state <s> ^operator <op>
+              ^epmem <epmem>
+              ^superstate <ss>
+              ^quiescence t)
+   (<ss> ^operator <ss-op>)
+   (<op> ^name result)
+   (<epmem> ^result.failure
+            ^command.query.operator.contents <color>)
+-->
+   (<ss> ^evaluated <e>)
+   (<e> ^name <color>
+        ^found f
+        ^value 0)
+}
+
+sp {apply*result*success
+   (state <s> ^operator <op>
+              ^epmem.command <cmd>)
+   (<cmd> ^query <q>)
+-->
+   (<cmd> ^query <q> -
+          ^next <n>)
+}
+
+sp {propose*evaluate*result2
+   (state <s> ^name evaluate
+              ^epmem.command.next
+              ^epmem.result.<< success failure >>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name result2)
+}
+
+sp {apply*result2*success
+   (state <s> ^operator <op>
+              ^epmem <epmem>
+              ^superstate <ss>)
+   (<ss> ^operator.contents <color>)
+   (<op> ^name result2)
+   (<epmem> ^result.retrieved.io.input-link.score-diff <v>)
+-->
+   (<ss> ^evaluated <e>)
+   (<e> ^name <color>
+        ^found t
+        ^value <v>)
+}
+
+###############
+
+sp {propose*move-tie*copy
+   (state <s> ^name move-tie)
+-->
+   (<s> ^operator <op> + <)
+   (<op> ^name copy)
+}
+
+sp {apply*copy
+   (state <s> ^operator <op>
+              ^superstate <ss>
+              ^item <ss-op>
+              ^evaluated <e>)
+   (<op> ^name copy)
+   (<ss-op> ^contents <contents>)
+   (<e> ^name <contents>
+        ^value <v>)
+-->
+   (<ss> ^operator <ss-op> = <v>)
+}
+
+sp {propose*move*rotate
+   (state <s> ^name move
+              ^superstate <ss>)
+   (<ss> ^operator <ss-op>
+         ^io.input-link.orientation <dir>)
+   (<ss-op> ^direction <> <dir>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name rotate)
+}
+
+sp {apply*rotate
+   (<s> ^operator.name rotate
+        ^superstate.io.output-link <out>)
+  -(<out> ^rotate)
+-->
+   (<out> ^rotate <r>)
+}
+
+sp {propose*move*forward
+   (state <s> ^name move
+              ^superstate <ss>)
+   (<ss> ^operator <ss-op>
+         ^io.input-link.orientation <dir>)
+   (<ss-op> ^direction <dir>)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name forward)
+}
+
+sp {apply*forward
+   (<s> ^operator.name forward
+        ^superstate.io.output-link <out>)
+  -(<out> ^forward)
+-->
+   (<out> ^forward <r>)
+}
