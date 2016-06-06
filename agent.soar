@@ -17,6 +17,7 @@ sp {apply*initialize-eater
 # cleans the output-link once commands complete
 sp {apply*cleanup*output-link
    (state <s> ^operator <op>
+              ^superstate nil
               ^io.output-link <out>)
    (<out> ^<cmd> <id>)
    (<id> ^status)
