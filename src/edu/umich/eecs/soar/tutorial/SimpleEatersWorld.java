@@ -46,6 +46,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	final protected int backupY;
 	protected boolean moving;
 	protected boolean outputProcessed;
+	protected boolean crashed;
 
 	protected Integer lastScore;
 	protected int score;
@@ -71,6 +72,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	
 	private void _resetState() {
 		moving = false;
+		crashed = false;
 		outputProcessed = false;
 		
 		lastScore = null;
@@ -244,6 +246,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 	
 	private void _updateState() {
 		lastScore = score;
+		crashed = false;
 		
 		if (moving) {
 			final int nextX = _nextX();
@@ -267,6 +270,7 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 				}
 			} else {
 				score -= wallPenalty;
+				crashed = true;
 			}			
 		}
 		
@@ -402,12 +406,17 @@ public abstract class SimpleEatersWorld implements RunEventInterface, OutputEven
 				}
 			}
 			
+			if (crashed) {
+				d.picture((x+_nextX())/2.+2, (y+_nextY())/2.+2, SimpleEatersWorld.class.getResource("crash.png").toString(),SIZE_EATER*1.5,SIZE_EATER*1.5);
+			}
+			d.setPenRadius(.005);
 			d.setPenColor(COLOR_EATER_OUTER);
 			d.filledCircle(x+2, y+2, SIZE_EATER);
 			d.setPenColor(COLOR_EATER_INNER);
-			d.filledCircle(x+2, y+2, SIZE_EATER*.98);
+			d.filledCircle(x+2, y+2, SIZE_EATER*.96);
 			d.setPenColor(Color.BLACK);
 			d.line(x+2, y+2, _nextX()+2, _nextY()+2);
+			d.setPenRadius();
 			
 			d.setPenColor(Color.BLACK);
 			d.textLeft(0, 0, String.format("Score: %d", score));
