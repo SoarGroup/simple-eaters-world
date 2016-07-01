@@ -1,3 +1,0 @@
-pushd hierarchical-RL
-source hierarchical-rl_source.soar
-popd

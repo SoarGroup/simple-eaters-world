@@ -1,3 +1,0 @@
-pushd simple-RL
-source simple-RL_source.soar
-popd

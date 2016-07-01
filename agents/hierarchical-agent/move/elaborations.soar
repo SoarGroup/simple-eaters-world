@@ -1,8 +1,0 @@
-sp {move*elaborate*substate
-   (state <s> ^name move
-              ^superstate.operator <so>)
-   (<so> ^name move
-         ^direction <dir>)
--->
-   (<s> ^move-direction <dir>)
-}

@@ -1,0 +1,92 @@
+# Initialization operator
+sp {propose*initialize-eater
+   (state <s> ^superstate nil
+             -^name)
+-->
+   (<s> ^operator <o> +)
+   (<o> ^name eater)
+}
+
+sp {apply*initialize-eater
+   (state <s> ^operator <op>)
+   (<op> ^name eater)
+-->
+   (<s> ^name eater)
+}
+
+# Forward operator
+sp {propose*forward
+   (state <s> ^name eater
+              ^io.input-link.time)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name forward)
+}
+
+sp {apply*forward
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name forward)
+-->
+   (<out> ^forward <f>)
+}
+
+# Rotate operator
+sp {propose*rotate
+   (state <s> ^name eater
+              ^io.input-link.time)
+-->
+   (<s> ^operator <op> + =)
+   (<op> ^name rotate)
+}
+
+sp {apply*rotate
+   (state <s> ^operator <op>
+              ^io.output-link <out>)
+   (<op> ^name rotate)
+-->
+   (<out> ^rotate <r>)
+}
+
+# cleans the output-link once commands complete
+sp {apply*cleanup*output-link
+   (state <s> ^operator <op>
+              ^superstate nil
+              ^io.output-link <out>)
+   (<out> ^<cmd> <id>)
+   (<id> ^status)
+-->
+   (<out> ^<cmd> <id> -)
+}
+
+# Done!
+sp {end
+   (state <s> ^io.input-link.food-remaining 0)
+-->
+   (halt)
+}
+
+# misc useful elaboration rules
+sp {elaborate*state*name
+   (state <s> ^superstate.operator.name <name>)
+-->
+   (<s> ^name <name>)
+}
+
+sp {elaborate*state*top-state
+   (state <s> ^superstate.top-state <ts>)
+-->
+   (<s> ^top-state <ts>)
+}
+
+sp {elaborate*top-state*top-state
+   (state <s> ^superstate nil)
+-->
+   (<s> ^top-state <s>)
+}
+
+sp {elaborate*state*io
+   (state <s> ^superstate.io <io>)
+-->
+   (<s> ^io <io>)
+}

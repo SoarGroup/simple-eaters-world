@@ -1,8 +1,0 @@
-sp {apply*cleanup*output-link
-   (state <s> ^operator <op>
-              ^io.output-link <out>)
-   (<out> ^<cmd> <id>)
-   (<id> ^status)
--->
-   (<out> ^<cmd> <id> -)
-}

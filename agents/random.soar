@@ -1,3 +1,0 @@
-pushd random
-source random_source.soar
-popd

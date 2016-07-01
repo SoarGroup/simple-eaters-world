@@ -1,3 +1,0 @@
-pushd hierarchical-SMEM
-source hierarchical-SMEM_source.soar
-popd

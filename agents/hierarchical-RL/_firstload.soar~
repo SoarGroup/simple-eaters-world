@@ -1,6 +1,0 @@
-srand 0
-rl -s learning on
-rl -s learning-policy q-learning
-indifferent-selection -g
-
-learn --on

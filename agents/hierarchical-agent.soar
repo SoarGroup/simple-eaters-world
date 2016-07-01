@@ -1,3 +1,0 @@
-pushd hierarchical-agent
-source hierarchical-agent_source.soar
-popd

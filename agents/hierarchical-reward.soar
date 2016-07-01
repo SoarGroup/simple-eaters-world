@@ -1,3 +1,0 @@
-pushd hierarchical-reward
-source hierarchical-reward_source.soar
-popd

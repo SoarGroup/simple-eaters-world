@@ -1,6 +1,0 @@
-sp {elaborations*elaborate*state
-   (state <s> ^name << move hierarchical-agent >>
-              ^io.input-link.{ << north south east west x y orientation >> <dir> } <value>)
--->
-   (<s> ^<dir> <value>)
-}

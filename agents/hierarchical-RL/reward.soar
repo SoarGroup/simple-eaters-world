@@ -1,7 +1,0 @@
-sp {hierarchical-RL*elaborate*reward
-   (state <s> ^name hierarchical-RL
-              ^reward-link <rl>
-              ^io.input-link.score-diff <d>)
--->
-   (<rl> ^reward.value <d>)
-}

@@ -1,7 +1,0 @@
-sp {hierarchical-rl*elaborate*move-direction
-   (state <s> ^superstate.operator <o>)
-   (<o> ^name move
-        ^dir <dir>)
--->
-   (<s> ^move-direction <dir>)
-}

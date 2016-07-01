@@ -1,6 +1,0 @@
-sp {task*complete
-   (state <s> ^name random
-              ^io.input-link.task complete)
--->
-   (halt)
-}
