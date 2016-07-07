@@ -35,9 +35,9 @@ sp {elaborate*add*add-pair
    -->
    (<s> ^add-pair <apx>) 
  (write (crlf) <a1> | + | <a2> | = ?|)
-
    (<apx> ^adden1 <a1>
-          ^adden2 <a2>)}
+          ^adden2 <a2>
+          ^copy-of <ap>)}
 sp {propose*count-up-count-down
    (state <s> ^name add
               ^add-pair <ap>)
@@ -55,14 +55,13 @@ sp {apply*count-up-count-down
                  <count1> -
          ^adden2 (- <count2> 1)
                  <count2> -)}
+
 sp {return*add-pair*sum
    (state <s> ^name add
-              ^add-pair <apx>
-              ^superstate.operator <o>)
-   (<o> ^name add
-        ^add-pair <ap>)
+              ^add-pair <apx>)
    (<apx> ^adden1 <a1>
-          ^adden2 0)
+          ^adden2 0
+          ^copy-of <ap>)
    -->
    (write (crlf) |Sum = | <a1>)
    (<ap> ^sum <a1>)}
@@ -74,6 +73,8 @@ sp {elaborate*add-pair*sum
    -->
 #   (write (crlf) |Sum = | <a1>)
    (<ap> ^sum <a1>)}
+
+
 sp {compute-sums*finished
    (state <s> ^name compute-sums)
   -{(<s> ^add-pair <ap>)

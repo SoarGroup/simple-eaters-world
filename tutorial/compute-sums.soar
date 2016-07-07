@@ -4,12 +4,13 @@ sp {propose*init-compute-sums
    -->
    (<s> ^operator <o> +)
    (<o> ^name init-compute-sums)}
+
 sp {apply*init-compute-sums
    (state <s> ^operator.name init-compute-sums)
 -->
    (<s> ^name compute-sums
         ^add-pair <ap1> <ap2> <ap3>)
-   (<ap1> ^adden1 9  ^adden2 5)
+   (<ap1> ^adden1 9 ^adden2 5)
    (<ap2> ^adden1 3 ^adden2 3)
    (<ap3> ^adden1 7 ^adden2 4)}
 
@@ -21,23 +22,25 @@ sp {propose*add
    (<s> ^operator <o> + =)
    (<o> ^name add
         ^add-pair <ap>)}
+
 sp {elaborate*add*add
    (state <s> ^superstate.operator <o>)
    (<o> ^name add)
    -->
    (<s> ^name add)}
+
 sp {elaborate*add*add-pair
    (state <s> ^superstate.operator <o>)
    (<o> ^name add
         ^add-pair <ap>)
    -->
    (<s> ^add-pair <ap>)}
+
 sp {propose*count-up-count-down
    (state <s> ^name add
               ^add-pair <ap>)
-   (<ap> ^adden1 <count1> 
-         ^adden2 <count2>)
-   -->
+   (<ap> ^adden2 <> 0)
+  -->
    (<s> ^operator <o> +)
    (<o> ^name count-up-count-down)}
 
@@ -58,6 +61,7 @@ sp {elaborate*add-pair*sum
    -->
    (write (crlf) |Sum = | <a1>)
    (<ap> ^sum <a1>)}
+
 sp {compute-sums*finished
    (state <s> ^name compute-sums)
   -{(<s> ^add-pair <ap>)
